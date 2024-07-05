@@ -6,6 +6,7 @@ from PyQt5.QtWidgets import (QApplication, QMainWindow, QLabel, QPushButton, QVB
 from PyQt5.QtGui import QPixmap, QImage
 from PyQt5.QtCore import Qt
 
+
 class ImageChannelViewer(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -81,7 +82,8 @@ class ImageChannelViewer(QMainWindow):
 
     def load_image(self):
         """Загружает изображение с диска и отображает его в окне."""
-        file_path, _ = QFileDialog.getOpenFileName(self, 'Открыть изображение', '', 'Image Files (*.png *.jpg)')
+        file_path, _ = QFileDialog.getOpenFileName(self, 'Открыть изображение',
+                                                   '', 'Image Files (*.png *.jpg)')
         if not file_path:
             QMessageBox.warning(self, 'Ошибка', 'Файл не выбран')
             return
@@ -94,6 +96,18 @@ class ImageChannelViewer(QMainWindow):
             self.show_image(self.current_img)
         except Exception as e:
             QMessageBox.critical(self, 'Ошибка загрузки изображения', str(e))
+
+    def show_image(self, image):
+        """Отображает изображение в окне приложения."""
+        b, g, r = cv2.split(image)
+        image = cv2.merge((r, g, b))  # Преобразование BGR в RGB
+        h, w, ch = image.shape
+        bytes_per_line = ch * w
+        qt_image = QImage(image.data, w, h, bytes_per_line, QImage.Format.Format_RGB888)
+        pixmap = QPixmap.fromImage(qt_image)
+        self.label_image.setPixmap(pixmap)
+        self.label_image.setScaledContents(False)
+        self.resize(w, h + 200)
 
     def capture_image(self):
         """Подключается к веб-камере, делает снимок и отображает его в окне."""
@@ -206,6 +220,7 @@ class ImageChannelViewer(QMainWindow):
         """Применяет яркость к текущему изображению."""
         adjusted_img = self.adjust_brightness_contrast(self.current_img.copy(), self.brightness_value, 0)
         self.show_image(adjusted_img)
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

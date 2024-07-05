@@ -1,0 +1,10 @@
+numpy
+opencv-python==4.10.0
+opencv-python-headless==4.10.0
+packaging
+ply
+PyQt5==5.15.10
+PyQt5-sip
+setuptools==70.2.0
+sip
+wheel==0.43.0
